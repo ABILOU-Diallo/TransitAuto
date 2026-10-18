@@ -1,0 +1,148 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  padding-bottom: 5rem;
+}
+
+.hero {
+  background: var(--brand-dark);
+  padding: 6rem 1rem 10rem 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: white;
+  margin: 1.5rem 0;
+  line-height: 1.1;
+}
+
+.description {
+  font-size: 1.125rem;
+  color: var(--neutral-400);
+  line-height: 1.6;
+}
+
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .reviewsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .reviewsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.reviewCard {
+  background: var(--bg-surface);
+  border-radius: 2rem;
+  padding: 2rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.reviewCard:hover {
+  transform: translateY(-5px);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.userName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.countryInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.rating {
+  margin-left: auto;
+  display: flex;
+  gap: 0.1rem;
+}
+
+.commentContent {
+  position: relative;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.quoteIcon {
+  position: absolute;
+  top: -0.5rem;
+  left: -0.5rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--primary);
+  opacity: 0.1;
+}
+
+.commentText {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--border-light);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.verified {
+  color: #10B981;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

@@ -1,0 +1,347 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  padding-bottom: 6rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark) .page {
+  background-color: var(--brand-dark);
+  color: var(--text-main);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 0 8rem 0;
+  background: linear-gradient(to bottom, var(--brand-dark), #1a1f35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.heroContent {
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: white;
+  margin-top: 1rem;
+}
+
+.heroDesc {
+  color: var(--neutral-300);
+  max-width: 42rem;
+  margin: 1rem auto 0;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.tabsSection {
+  margin-top: -3rem;
+  position: relative;
+  z-index: 20;
+}
+
+.tabsCard {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border-radius: 2rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
+}
+
+:global(.dark) .tabsCard {
+  background: var(--brand-surface);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 768px) {
+  .tabsCard {
+    padding: 2.5rem;
+  }
+}
+
+.tabNav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+:global(.dark) .tabNav {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 768px) {
+  .tabNav {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.tabButton {
+  padding: 1rem;
+  border-radius: 1rem;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tabButtonActive {
+  background: var(--primary);
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+}
+
+.tabButtonInactive {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+}
+
+:global(.dark) .tabButtonInactive {
+  background: rgba(10, 15, 30, 0.6);
+  color: var(--text-muted);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.tabTag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.tabTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.serviceContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .serviceContent {
+    grid-template-columns: repeat(12, 1fr);
+  }
+  .serviceText { grid-column: span 6; }
+  .serviceVisual { grid-column: span 6; }
+}
+
+.serviceTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.serviceDesc {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.pointsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.pointItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.imageWrapper {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  aspect-ratio: 4 / 3;
+  background: var(--bg-subtle);
+}
+
+.serviceImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.statBadge {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: rgba(10, 15, 30, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  text-align: right;
+}
+
+.statNum {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--primary);
+  display: block;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--neutral-300);
+}
+
+.stepGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 768px) {
+  .stepGrid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.stepCard {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+:global(.dark) .stepCard {
+  background: var(--brand-surface);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stepNumber {
+  font-size: 2rem;
+  font-weight: 900;
+  color: rgba(14, 165, 233, 0.25);
+  margin-bottom: 0.75rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-top: 2.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
+.th {
+  padding: 1rem;
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-light);
+}
+
+:global(.dark) .th {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+:global(.dark) .td {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.tdHighlight {
+  background: rgba(14, 165, 233, 0.08);
+  font-weight: 700;
+}
+
+.faqContainer {
+  max-width: 56rem;
+  margin: 4rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faqItem {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border-radius: 1rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+:global(.dark) .faqItem {
+  background: var(--brand-surface);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.faqButton {
+  width: 100%;
+  padding: 1.25rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-main);
+}
+
+.faqAnswer {
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+:global(.dark) .faqAnswer {
+  color: var(--neutral-300);
+}

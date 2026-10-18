@@ -1,0 +1,257 @@
+/* src/pages/Admin.module.css */
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-family: 'Inter', sans-serif;
+}
+
+:global(.dark) .adminLayout {
+  background-color: #050811;
+  color: #f8fafc;
+}
+
+/* ─── Sidebar Professionnelle ─── */
+.sidebar {
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+  box-shadow: 10px 0 30px -15px rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .sidebar {
+  background: #0a0f1e;
+  border-right-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebarHeader {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.adminLogo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0ea5e9;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.navItem:hover {
+  background: #f8fafc;
+  color: #0ea5e9;
+}
+
+:global(.dark) .navItem:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.navItemActive {
+  background: #0ea5e9 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px -4px rgba(14, 165, 233, 0.4);
+}
+
+.navIcon {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.sidebarFooter {
+  padding: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 2rem;
+}
+
+:global(.dark) .sidebarFooter {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.adminProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+}
+
+.adminAvatar {
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.adminName {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.adminRole {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.logoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  color: #f43f5e;
+  background: #fff1f2;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: transform 0.2s;
+}
+
+.logoutBtn:hover {
+  transform: translateY(-2px);
+  background: #ffe4e6;
+}
+
+/* ─── En-tête du Contenu ─── */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+}
+
+.contentHeader {
+  height: 80px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+:global(.dark) .contentHeader {
+  background: rgba(10, 15, 30, 0.8);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.headerTitle {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+}
+
+:global(.dark) .headerTitle {
+  color: #ffffff;
+}
+
+.notifBtn {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.notifBtn:hover {
+  background: #e2e8f0;
+  color: #0ea5e9;
+}
+
+.notifBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.scrollArea {
+  flex: 1;
+  padding: 3rem;
+  overflow-y: auto;
+}
+
+/* ─── Modules Communs ─── */
+.dashboardCard {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+}
+
+:global(.dark) .dashboardCard {
+  background: #14192d;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}

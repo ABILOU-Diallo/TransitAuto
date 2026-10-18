@@ -1,0 +1,372 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  padding-bottom: 8rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark) .page {
+  background-color: var(--brand-dark);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 0 8rem 0;
+  background: linear-gradient(to bottom, var(--brand-dark), #1a1f35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.heroContent {
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 900;
+  color: white;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+.heroDesc {
+  color: var(--neutral-400);
+  max-width: 42rem;
+  margin: 0 auto;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.searchSection {
+  margin-top: -3rem;
+  position: relative;
+  z-index: 20;
+  max-width: 56rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.searchCard {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 1.5rem;
+  border-radius: 3rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+}
+
+:global(.dark) .searchCard {
+  background: rgba(20, 25, 45, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+@media (min-width: 768px) {
+  .searchCard {
+    padding: 2.5rem;
+  }
+}
+
+.searchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .searchForm {
+    flex-direction: row;
+  }
+}
+
+.inputWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--text-muted);
+}
+
+.exampleList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.exampleBtn {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exampleBtn:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: var(--primary);
+}
+
+.resultsArea {
+  margin-top: 4rem;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.resultCard {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 2.5rem;
+  border-radius: 3rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+:global(.dark) .resultCard {
+  background: rgba(20, 25, 45, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.resultHeader {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+@media (min-width: 768px) {
+  .resultHeader {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.vehicleName {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 900;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+:global(.dark) .vehicleName {
+  color: #FFFFFF;
+}
+
+.etaLabel {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.etaValue {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+.logisticsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2.5rem 0;
+}
+
+@media (min-width: 640px) {
+  .logisticsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .logisticsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.logisticsItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemLabel {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.itemValue {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+:global(.dark) .itemValue {
+  color: #FFFFFF;
+}
+
+.timeline {
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.timelineTitle {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+}
+
+.stepList {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.stepItem {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+}
+
+.stepIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.75rem;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.stepDone {
+  background: #10B981;
+  color: white;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.stepCurrent {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+  transform: scale(1.1);
+}
+
+.stepPending {
+  background: var(--bg-subtle);
+  color: var(--text-dim);
+  border: 1px solid var(--border-light);
+}
+
+.stepLine {
+  position: absolute;
+  left: 1.25rem;
+  top: 2.5rem;
+  width: 2px;
+  height: 2.5rem;
+}
+
+.lineDone { background: #10B981; }
+.linePending { background: var(--border-light); }
+
+.stepContent {
+  flex: 1;
+}
+
+.stepHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.stepTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.stepDesc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 36rem;
+}
+
+.footerActions {
+  margin-top: 3rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.downloadBtn:hover {
+  color: var(--primary);
+}

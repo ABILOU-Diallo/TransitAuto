@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IMPERIAL CHINA EXPORT | Importation de véhicules de Chine vers l'Afrique</title>
+    <meta name="description" content="IMPERIAL CHINA EXPORT - Importez votre voiture de Chine vers l'Afrique (Douala, Abidjan, Dakar). BYD, Zeekr, Changan, Jetour aux meilleurs prix." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- CinetPay SDK for African Mobile Money Payments -->
+    <script src="https://checkout.cinetpay.com/sdk/v1/cinetpay.js"></script>
+    <script>
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+  </head>
+  <body class="h-full bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50 font-body antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
