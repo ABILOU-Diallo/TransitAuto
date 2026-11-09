@@ -126,7 +126,30 @@ export const countries = [
   },
 ];
 
-export const initializeCinetPay = (data: {
+// Chargement dynamique et asynchrone du SDK CinetPay à la demande
+const loadCinetPayScript = (): Promise<void> => {
+  if (typeof window !== 'undefined' && (window as any).CinetPay) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const existing = document.getElementById('cinetpay-sdk');
+    if (existing) {
+      if ((window as any).CinetPay) return resolve();
+      existing.addEventListener('load', () => resolve());
+      existing.addEventListener('error', () => reject(new Error("Impossible de joindre le serveur CinetPay.")));
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'cinetpay-sdk';
+    script.src = 'https://checkout.cinetpay.com/sdk/v1/cinetpay.js';
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Le SDK CinetPay est temporairement inaccessible."));
+    document.body.appendChild(script);
+  });
+};
+
+export const initializeCinetPay = async (data: {
   amount: number;
   currency: string;
   transactionId: string;
@@ -136,9 +159,11 @@ export const initializeCinetPay = (data: {
   customerEmail: string;
   customerPhoneNumber: string;
 }) => {
+  await loadCinetPayScript();
+
   return new Promise((resolve, reject) => {
     if (!(window as any).CinetPay) {
-      reject("Le SDK CinetPay n'est pas chargé. Vérifiez votre connexion internet.");
+      reject("Le SDK CinetPay n'a pas pu être initialisé.");
       return;
     }
 

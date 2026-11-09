@@ -5,6 +5,7 @@ import { Vehicle } from '@/types/Vehicle';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import styles from './VehicleCard.module.css';
+import Watermark from './Watermark';
 import {
   MapPinIcon,
   UserGroupIcon,
@@ -54,6 +55,7 @@ const VehicleCard: React.FC<Props> = ({ vehicle, onSelect }) => {
           loading="lazy"
         />
         <div className={styles.overlay} />
+        <Watermark fontSize={1.35} />
 
         {/* Badges flottants */}
         <div className={styles.badgeContainer}>

@@ -1,18 +1,43 @@
 /* src/pages/Admin.module.css */
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN DASHBOARD - RESPONSIVE STYLESHEET
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── 1. Layout Global ─── */
 .adminLayout {
   display: flex;
   min-height: 100vh;
-  background-color: #f1f5f9;
-  color: #1e293b;
-  font-family: 'Inter', sans-serif;
+  width: 100%;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  position: relative;
+  overflow-x: hidden;
 }
 
 :global(.dark) .adminLayout {
-  background-color: #050811;
-  color: #f8fafc;
+  background-color: #090d16;
+  color: #f1f5f9;
 }
 
-/* ─── Sidebar Professionnelle ─── */
+/* ─── 2. Backdrop Sombre (Mobile) ─── */
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    animation: fadeIn 0.2s ease-out;
+  }
+}
+
+/* ─── 3. Sidebar (Navigation latérale) ─── */
 .sidebar {
   width: 280px;
   background: #ffffff;
@@ -23,190 +48,337 @@
   top: 0;
   height: 100vh;
   z-index: 100;
-  box-shadow: 10px 0 30px -15px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
 }
 
 :global(.dark) .sidebar {
-  background: #0a0f1e;
-  border-right-color: rgba(255, 255, 255, 0.05);
+  background: #0d1322;
+  border-right-color: rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 290px;
+    z-index: 999;
+    transform: translateX(-100%);
+    box-shadow: 15px 0 35px -10px rgba(0, 0, 0, 0.25);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
 }
 
 .sidebarHeader {
-  padding: 3rem 1.5rem;
-  text-align: center;
+  padding: 2rem 1.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .adminLogo {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: #0ea5e9;
-  letter-spacing: -1px;
-  display: flex;
+  background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.closeSidebarBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+}
+
+@media (max-width: 1023px) {
+  .closeSidebarBtn {
+    display: flex;
+  }
 }
 
 .sidebarNav {
   flex: 1;
-  padding: 0 1.25rem;
+  padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .navItem {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-radius: 14px;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #64748b;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   text-align: left;
+  width: 100%;
+  position: relative;
+}
+
+:global(.dark) .navItem {
+  color: #94a3b8;
 }
 
 .navItem:hover {
-  background: #f8fafc;
+  background: #f1f5f9;
   color: #0ea5e9;
 }
 
 :global(.dark) .navItem:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
+  color: #38bdf8;
 }
 
 .navItemActive {
   background: #0ea5e9 !important;
   color: #ffffff !important;
-  box-shadow: 0 8px 20px -4px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 4px 14px -2px rgba(14, 165, 233, 0.4);
+}
+
+:global(.dark) .navItemActive {
+  background: #0284c7 !important;
 }
 
 .navIcon {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
 }
 
 .sidebarFooter {
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-top: 1px solid #f1f5f9;
-  margin-top: 2rem;
+  margin-top: auto;
 }
 
 :global(.dark) .sidebarFooter {
-  border-top-color: rgba(255, 255, 255, 0.05);
+  border-top-color: rgba(255, 255, 255, 0.06);
 }
 
 .adminProfile {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.5rem;
 }
 
 .adminAvatar {
-  width: 3rem;
-  height: 3rem;
+  width: 2.6rem;
+  height: 2.6rem;
   background: linear-gradient(135deg, #0ea5e9, #0284c7);
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .adminName {
-  font-size: 0.9rem;
-  font-weight: 800;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:global(.dark) .adminName {
+  color: #f8fafc;
 }
 
 .adminRole {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #94a3b8;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .logoutBtn {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 12px;
-  color: #f43f5e;
-  background: #fff1f2;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: #e11d48;
+  background: #ffe4e6;
   border: none;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 0.9rem;
-  transition: transform 0.2s;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+:global(.dark) .logoutBtn {
+  background: rgba(225, 29, 72, 0.12);
+  color: #fb7185;
 }
 
 .logoutBtn:hover {
-  transform: translateY(-2px);
-  background: #ffe4e6;
+  background: #fecdd3;
+  transform: translateY(-1px);
 }
 
-/* ─── En-tête du Contenu ─── */
+/* ─── 4. Main Content Area ─── */
 .mainContent {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
   height: 100vh;
+  overflow-y: hidden;
 }
 
 .contentHeader {
-  height: 80px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
+  height: 70px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid #e2e8f0;
-  padding: 0 3rem;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 90;
+  flex-shrink: 0;
+  z-index: 50;
 }
 
 :global(.dark) .contentHeader {
-  background: rgba(10, 15, 30, 0.8);
-  border-bottom-color: rgba(255, 255, 255, 0.05);
+  background: rgba(13, 19, 34, 0.85);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 768px) {
+  .contentHeader {
+    height: 60px;
+    padding: 0 1rem;
+  }
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.menuToggleBtn {
+  display: none;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+:global(.dark) .menuToggleBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+@media (max-width: 1023px) {
+  .menuToggleBtn {
+    display: flex;
+  }
 }
 
 .headerTitle {
-  font-size: 1.5rem;
-  font-weight: 900;
+  font-size: 1.35rem;
+  font-weight: 800;
   letter-spacing: -0.5px;
   color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 :global(.dark) .headerTitle {
-  color: #ffffff;
+  color: #f8fafc;
+}
+
+@media (max-width: 640px) {
+  .headerTitle {
+    font-size: 1.1rem;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.headerDateBadge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+:global(.dark) .headerDateBadge {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+@media (max-width: 500px) {
+  .headerDateBadge {
+    display: none;
+  }
 }
 
 .notifBtn {
   position: relative;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 12px;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10px;
   background: #f1f5f9;
-  border: none;
-  color: #64748b;
+  border: 1px solid #e2e8f0;
+  color: #475569;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+}
+
+:global(.dark) .notifBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
 }
 
 .notifBtn:hover {
@@ -216,13 +388,13 @@
 
 .notifBadge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 18px;
-  height: 18px;
+  top: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
   background-color: #ef4444;
   color: white;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   border-radius: 50%;
   display: flex;
@@ -231,27 +403,647 @@
   border: 2px solid white;
 }
 
-.scrollArea {
-  flex: 1;
-  padding: 3rem;
-  overflow-y: auto;
+:global(.dark) .notifBadge {
+  border-color: #0d1322;
 }
 
-/* ─── Modules Communs ─── */
+.scrollArea {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1024px) {
+  .scrollArea {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .scrollArea {
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* ─── 5. Modules Communs (Titre, Cartes, etc.) ─── */
+.moduleContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.moduleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .moduleHeader {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 1.25rem;
+  }
+}
+
+.tabTitle {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+:global(.dark) .tabTitle {
+  color: #f8fafc;
+}
+
+.tabSubtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0.25rem 0 0;
+}
+
+:global(.dark) .tabSubtitle {
+  color: #94a3b8;
+}
+
 .dashboardCard {
   background: #ffffff;
-  border-radius: 24px;
+  border-radius: 18px;
   border: 1px solid #e2e8f0;
-  padding: 2rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s;
 }
 
 :global(.dark) .dashboardCard {
-  background: #14192d;
-  border-color: rgba(255, 255, 255, 0.05);
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 640px) {
+  .dashboardCard {
+    padding: 1.1rem;
+    border-radius: 14px;
+  }
+}
+
+/* ─── 6. Grille de Statistiques (Overview) ─── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 520px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.statCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+:global(.dark) .statCard {
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.05);
+}
+
+/* ─── 7. Grille Dashboard Double Colonne ─── */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+/* ─── 8. Barres de Recherche & Filtres ─── */
+.filterBar {
+  margin-bottom: 1.5rem;
+}
+
+.headerSearch {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+:global(.dark) .headerSearch {
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.headerSearch input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.9rem;
+  color: inherit;
+}
+
+.searchIcon {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* ─── 9. Tableaux Responsifs (Défilement horizontal doux) ─── */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  margin-bottom: 2rem;
+}
+
+:global(.dark) .tableWrapper {
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.adminTable {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.adminTable th {
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+:global(.dark) .adminTable th {
+  background: rgba(255, 255, 255, 0.02);
+  color: #94a3b8;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.adminTable td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+:global(.dark) .adminTable td {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+.adminTable tr:last-child td {
+  border-bottom: none;
+}
+
+.adminTable tr:hover td {
+  background: #f8fafc;
+}
+
+:global(.dark) .adminTable tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.miniThumb {
+  width: 4.5rem;
+  height: 3rem;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.priceTag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0ea5e9;
+  white-space: nowrap;
+}
+
+/* ─── 10. Badges de Statut ─── */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusChine {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.statusTransit {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.statusPort {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.statusVIP {
+  background: #fdf4ff;
+  color: #a21caf;
+  border: 1px solid #f0abfc;
+}
+
+.statusActif {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+:global(.dark) .statusChine {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+:global(.dark) .statusTransit {
+  background: rgba(14, 165, 233, 0.15);
+  color: #38bdf8;
+}
+
+:global(.dark) .statusPort {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+:global(.dark) .statusVIP {
+  background: rgba(192, 38, 211, 0.15);
+  color: #e879f9;
+}
+
+/* ─── 11. Boutons d'Action ─── */
+.iconBtn {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+:global(.dark) .iconBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+.iconBtn:hover {
+  background: #e2e8f0;
+  color: #0ea5e9;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #38bdf8;
+}
+
+/* ─── 12. Grille de Clients ─── */
+.clientsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 480px) {
+  .clientsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.clientCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s;
+}
+
+:global(.dark) .clientCard {
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.avatarLarge {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ─── 13. Grille d'Avis (Reviews) ─── */
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 480px) {
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reviewCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+:global(.dark) .reviewCard {
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.reviewCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: #0ea5e9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.reviewMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.ratingStars {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.reviewBody {
+  position: relative;
+  flex: 1;
+}
+
+.quoteIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #cbd5e1;
+  margin-bottom: 0.25rem;
+}
+
+:global(.dark) .quoteIcon {
+  color: #334155;
+}
+
+.reviewText {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #334155;
+}
+
+:global(.dark) .reviewText {
+  color: #cbd5e1;
+}
+
+.reviewFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+:global(.dark) .reviewFooter {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.actionBtns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* ─── 14. Liste de Messages (Contacts) ─── */
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.messageCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: all 0.2s;
+}
+
+:global(.dark) .messageCard {
+  background: #111728;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.unreadMessage {
+  border-left: 4px solid #0ea5e9;
+  background: #f0f9ff;
+}
+
+:global(.dark) .unreadMessage {
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.senderInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatarMini {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 8px;
+  background: #64748b;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.messageBody {
+  font-size: 0.88rem;
+}
+
+.textPreview {
+  color: #475569;
+  margin-top: 0.35rem;
+  line-height: 1.5;
+}
+
+:global(.dark) .textPreview {
+  color: #94a3b8;
+}
+
+.messageFooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.textBtnIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+:global(.dark) .textBtnIcon {
+  background: rgba(14, 165, 233, 0.15);
+  color: #38bdf8;
+}
+
+/* ─── 15. Modal d'Édition Logistique ─── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+/* ─── 16. Utilitaires de Texte ─── */
+.bold {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+:global(.dark) .bold {
+  color: #f8fafc;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+:global(.dark) .muted {
+  color: #94a3b8;
+}
+
+.placeholder {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

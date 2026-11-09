@@ -18,6 +18,7 @@ import {
   ChatBubbleLeftEllipsisIcon
 } from '@heroicons/react/24/outline';
 import { countries } from '@/lib/paymentProvider';
+import { mockReviews } from '@/mocks/reviews';
 
 const Home: React.FC = () => {
   const { fetchVehicles, vehicles, loading } = useStore();
@@ -27,8 +28,16 @@ const Home: React.FC = () => {
   useEffect(() => {
     fetchVehicles();
     const fetchReviews = async () => {
-      const { data } = await supabase.from('reviews').select('*').limit(3);
-      if (data) setReviews(data);
+      try {
+        const { data } = await supabase.from('reviews').select('*').limit(3);
+        if (data && data.length > 0) {
+          setReviews(data);
+        } else {
+          setReviews(mockReviews.slice(0, 3));
+        }
+      } catch {
+        setReviews(mockReviews.slice(0, 3));
+      }
     };
     fetchReviews();
   }, [fetchVehicles]);

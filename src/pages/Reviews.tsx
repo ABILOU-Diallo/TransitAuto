@@ -5,15 +5,9 @@ import { motion } from 'framer-motion';
 import styles from './Reviews.module.css';
 import { StarIcon, ChatBubbleLeftRightIcon, MapPinIcon } from '@heroicons/react/24/solid';
 import { countries } from '@/lib/paymentProvider';
+import { mockReviews, ReviewMock } from '@/mocks/reviews';
 
-interface Review {
-  id: string;
-  user_name: string;
-  country_code: string;
-  rating: number;
-  comment: string;
-  created_at: string;
-}
+type Review = ReviewMock;
 
 const Reviews: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -21,13 +15,23 @@ const Reviews: React.FC = () => {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (data) setReviews(data);
-      setLoading(false);
+        if (data && data.length > 0) {
+          setReviews(data);
+        } else {
+          setReviews(mockReviews);
+        }
+      } catch (err) {
+        console.warn('Utilisation des avis locaux de démonstration :', err);
+        setReviews(mockReviews);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchReviews();
   }, []);

@@ -28,12 +28,12 @@ const AdminOverview: React.FC = () => {
 
   return (
     <div className={styles.moduleContainer}>
-      <header className={styles.moduleHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+      <header className={styles.moduleHeader}>
         <div>
           <h2 className={styles.tabTitle}>Tableau de bord</h2>
           <p className={styles.tabSubtitle}>Aperçu global de l'activité d'Imperial China Export.</p>
         </div>
-        <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, background: 'white', padding: '0.5rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+        <div className={styles.headerDateBadge}>
           {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </header>

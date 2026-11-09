@@ -48,12 +48,12 @@ const AdminOrders: React.FC = () => {
 
   return (
     <div className={styles.moduleContainer}>
-      <header className={styles.moduleHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <header className={styles.moduleHeader}>
         <div>
           <h2 className={styles.tabTitle}>Commandes & Logistique</h2>
           <p className={styles.tabSubtitle}>Suivi des imports, BL maritimes et dates d'accostage.</p>
         </div>
-        <button className={styles.iconBtn} style={{ width: 'auto', padding: '0 1rem', gap: '0.5rem' }}>
+        <button className={styles.iconBtn} style={{ width: 'auto', padding: '0.5rem 1rem', gap: '0.5rem', whiteSpace: 'nowrap' }}>
           <DocumentArrowDownIcon style={{ width: '1.1rem' }} />
           <span>Rapport PDF</span>
         </button>

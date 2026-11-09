@@ -29,12 +29,12 @@ const AdminClients: React.FC = () => {
 
   return (
     <div className={styles.moduleContainer}>
-      <header className={styles.moduleHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <header className={styles.moduleHeader}>
         <div>
           <h2 className={styles.tabTitle}>Portefeuille Clients</h2>
           <p className={styles.tabSubtitle}>Gérez vos relations commerciales et suivez l'activité de vos importateurs.</p>
         </div>
-        <button className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '10px' }}>
+        <button className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', borderRadius: '10px', padding: '0.75rem 1.25rem', whiteSpace: 'nowrap' }}>
           <UserPlusIcon style={{ width: '1.2rem' }} />
           Nouveau Client
         </button>

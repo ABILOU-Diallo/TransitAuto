@@ -101,11 +101,14 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 -- 3. FONCTIONS & SÉCURITÉ
 -- ==========================================
 
--- Fonction admin sans récursion
+-- Fonction admin sans récursion (utilise directement le token JWT, aucune requête récursive)
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
-  RETURN (SELECT is_admin FROM public.profiles WHERE id = auth.uid());
+  RETURN (
+    COALESCE((auth.jwt() ->> 'email'), '') = 'imperial@chinaexport.com'
+    OR COALESCE((auth.jwt() -> 'app_metadata' ->> 'is_admin')::boolean, false) = true
+  );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -121,9 +124,11 @@ ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 -- 4. POLITIQUES DE SÉCURITÉ (RLS)
 -- ==========================================
 
--- Profiles
-CREATE POLICY "Profiles self select" ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Admins manage profiles" ON public.profiles FOR ALL USING (public.is_admin());
+-- Profiles (sécurisé sans boucle de récursion)
+CREATE POLICY "Profiles self select" ON public.profiles FOR SELECT USING (auth.uid() = id OR public.is_admin());
+CREATE POLICY "Profiles self update" ON public.profiles FOR UPDATE USING (auth.uid() = id OR public.is_admin());
+CREATE POLICY "Profiles self insert" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id OR public.is_admin());
+CREATE POLICY "Profiles admin delete" ON public.profiles FOR DELETE USING (public.is_admin());
 
 -- Vehicles
 CREATE POLICY "Vehicles public select" ON public.vehicles FOR SELECT USING (true);
@@ -159,7 +164,7 @@ BEGIN
   ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
@@ -173,10 +178,18 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('vehicles', 'vehicles', t
 CREATE POLICY "Public Storage Access" ON storage.objects FOR SELECT USING (bucket_id = 'vehicles');
 CREATE POLICY "Admin Storage Upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'vehicles' AND public.is_admin());
 
--- Insertion d'avis de test
+-- Insertion de nombreux avis clients réalistes (Afrique subsaharienne)
 DELETE FROM public.reviews;
 INSERT INTO public.reviews (user_name, country_code, comment, rating) VALUES
-('Jean-Paul K.', 'CI', 'Ma BYD Tang est arrivée à Abidjan en 20 jours. Service impeccable ! 🇨🇮', 5),
-('Moussa S.', 'SN', 'Très sceptique au début, mais le suivi BL est réel. Port de Dakar validé. 🇸🇳', 5),
-('Kevin M.', 'GA', 'Zeekr 001 reçue à Libreville. La voiture est incroyable. 🇬🇦', 5),
-('Arnaud N.', 'CM', 'Dédouanement à Douala bien géré. Je recommande Imperial China Export. 🇨🇲', 4);
+('Jean-Paul K.', 'CI', 'Ma BYD Tang est arrivée au port d''Abidjan en exactement 21 jours. Dédouanement pris en charge de A à Z. Autonomie réelle de plus de 580 km ! 🇨🇮', 5),
+('Moussa S.', 'SN', 'Très sceptique au début sur l''import direct de Chine, mais le suivi conteneur en temps réel avec le numéro BL m''a totalement rassuré. Port de Dakar validé ! 🇸🇳', 5),
+('Christian B.', 'CM', 'Économie de plus de 11 millions FCFA sur ma Changan UNI-K par rapport au prix concessionnaire à Bonanjo. Climatisation tropicalisée au top pour Douala. 🇨🇲', 5),
+('Kevin M.', 'GA', 'Zeekr 001 reçue au port d''Owendo à Libreville. Voiture magnifique, suspension pneumatique magique sur nos routes. 🇬🇦', 5),
+('Fatou C.', 'SN', 'Chery Tiggo 8 Pro 7 places reçue à Dakar. Paiement de l''acompte sécurisé en ligne. Inspection vidéo à Shanghai avant embarquement très rassurante ! 🇸🇳', 5),
+('Arnaud N.', 'CM', 'Jetour Dashing livrée à Yaoundé. Design futuriste, tenue de route impressionnante sur l''axe Douala-Yaoundé. Dédouanement bien géré. 🇨🇲', 4),
+('Amadou D.', 'CI', 'BYD Song Plus EV reçue à San Pedro. Première voiture électrique pour moi, recharge facile la nuit, facture de transport divisée par 4. 🇨🇮', 5),
+('Kodjo A.', 'TG', 'Geely Monjaro retirée au Port Autonome de Lomé. Finition haut de gamme digne des standards européens, moteur très nerveux. 🇹🇬', 5),
+('Rodrigue K.', 'BJ', 'BYD Seal Performance reçue à Cotonou. Accélération fulgurante (0-100 en 3.8s) ! Bravo pour la fluidité des formalités maritimes. 🇧🇯', 5),
+('Serge M.', 'CG', 'Livraison de mon Haval H6 au port de Pointe-Noire. Véhicule 100% conforme aux photos transmises. Déjà en train de préparer une 2ème commande. 🇨🇬', 5),
+('Ange-Patrick Y.', 'CI', 'NIO ES6 avec assistant vocal et conduite autonome. Arrivée à Abidjan avec toutes les certifications traduites. Équipe très réactive sur WhatsApp. 🇨🇮', 5),
+('Samuel E.', 'CM', 'Changan CS75 Plus livrée à Douala. Paiement fractionné sécurisé qui m''a permis de planifier ma trésorerie sereinement. 🇨🇲', 5);

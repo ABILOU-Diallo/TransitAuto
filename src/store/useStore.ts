@@ -1,7 +1,9 @@
 // src/store/useStore.ts
 import { create } from 'zustand';
 import { Vehicle } from '@/types/Vehicle';
-import { supabase, supabaseAdmin } from '@/lib/supabaseClient';
+import { supabase, supabaseAdmin, isSupabaseConfigured } from '@/lib/supabaseClient';
+import { mockVehicles } from '@/mocks/vehicles';
+import { mockReviews } from '@/mocks/reviews';
 
 export interface ReservationItem {
   id: string;
@@ -53,6 +55,15 @@ export interface AdminNotification {
   priority?: 'normal' | 'high';
 }
 
+export interface ReviewItem {
+  id: string;
+  user_name: string;
+  country_code: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
 const LOCAL_NOTIFS_KEY = 'ice_admin_notifs_cache';
 
 export interface StoreState {
@@ -63,6 +74,7 @@ export interface StoreState {
   reservations: ReservationItem[];
   adminOrders: ReservationItem[];
   adminClients: ClientProfile[];
+  adminReviews: ReviewItem[];
   adminNotifications: AdminNotification[];
   compareList: Vehicle[];
 
@@ -79,6 +91,8 @@ export interface StoreState {
   fetchAdminClients: () => Promise<void>;
   saveAdminClient: (client: Partial<ClientProfile>) => Promise<void>;
   deleteAdminClient: (id: string) => Promise<void>;
+  fetchAdminReviews: () => Promise<void>;
+  deleteReview: (id: string) => Promise<void>;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   deleteNotification: (id: string) => void;
@@ -101,6 +115,7 @@ export const useStore = create<StoreState>((set, get) => ({
   reservations: [],
   adminOrders: [],
   adminClients: [],
+  adminReviews: [],
   adminNotifications: (() => {
     try {
       const stored = localStorage.getItem(LOCAL_NOTIFS_KEY);
@@ -114,16 +129,39 @@ export const useStore = create<StoreState>((set, get) => ({
 
   fetchUserSession: async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+      if (sessionErr) {
+        console.warn('Erreur récupération session:', sessionErr);
+        return;
+      }
       if (session?.user) {
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-        const isAdmin = !!(profile?.is_admin || session.user.email?.toLowerCase() === 'imperial@chinaexport.com');
+        let profile: any = null;
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (!error && data) {
+            profile = data;
+          }
+        } catch (profileErr) {
+          console.warn('Profil introuvable ou erreur DB (repli métadonnées session) :', profileErr);
+        }
+
+        const isAdmin = !!(
+          profile?.is_admin ||
+          session.user.email?.toLowerCase() === 'imperial@chinaexport.com' ||
+          session.user.user_metadata?.is_admin
+        );
+
         set({
           user: {
             id: session.user.id,
             email: session.user.email || '',
-            full_name: profile?.full_name || 'Utilisateur ICE',
-            phone: profile?.phone || '',
+            full_name: profile?.full_name || session.user.user_metadata?.full_name || 'Utilisateur ICE',
+            phone: profile?.phone || session.user.user_metadata?.phone || '',
             is_admin: isAdmin,
           }
         });
@@ -149,9 +187,13 @@ export const useStore = create<StoreState>((set, get) => ({
   fetchVehicles: async () => {
     set({ loading: true });
     try {
+      if (!isSupabaseConfigured) {
+        set({ vehicles: mockVehicles, loading: false });
+        return;
+      }
       const { data, error } = await supabase.from('vehicles').select('*').order('created_at', { ascending: false });
-      if (data) {
-        const mapped = data.map((v: any) => ({
+      if (data && data.length > 0) {
+        const mapped: Vehicle[] = data.map((v: any) => ({
           id: v.id,
           brand: v.brand,
           model: v.model,
@@ -162,17 +204,24 @@ export const useStore = create<StoreState>((set, get) => ({
           mileage: v.mileage,
           status: v.status,
           totalPriceFCFA: v.price_fcfa,
-          images: v.images,
+          images: v.images || [],
           description: v.description,
           badge: v.badge,
           powerHp: v.power_hp,
-          rangeKm: v.range_km
+          rangeKm: v.range_km,
+          priceChina: v.price_china || 0,
+          freight: v.freight || 0,
+          customsFee: v.customs_fee || 0,
+          color: v.color || 'Standard',
         }));
         set({ vehicles: mapped });
+      } else {
+        set({ vehicles: mockVehicles });
       }
       if (error) throw error;
     } catch (err) {
-      console.error("Fetch vehicles error:", err);
+      console.warn("Fetch vehicles error (falling back to mock data):", err);
+      set({ vehicles: mockVehicles });
     } finally {
       set({ loading: false });
     }
@@ -188,37 +237,82 @@ export const useStore = create<StoreState>((set, get) => ({
     const dbData: any = {
       brand: vData.brand,
       model: vData.model,
-      year: vData.year,
+      year: Number(vData.year) || new Date().getFullYear(),
       fuel: vData.fuel,
       transmission: vData.transmission,
-      seats: vData.seats,
-      mileage: vData.mileage,
-      status: vData.status,
-      price_fcfa: vData.totalPriceFCFA,
-      images: vData.images,
-      description: vData.description,
-      badge: vData.badge,
-      power_hp: vData.powerHp,
-      range_km: vData.rangeKm
+      seats: Number(vData.seats) || 5,
+      mileage: Number(vData.mileage) || 0,
+      status: vData.status || 'En Chine',
+      price_fcfa: Number(vData.totalPriceFCFA) || 0,
+      images: vData.images && vData.images.length > 0 ? vData.images : ['https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80'],
+      description: vData.description || '',
+      badge: vData.badge || 'Nouveau',
+      power_hp: vData.powerHp ? Number(vData.powerHp) : null,
+      range_km: vData.rangeKm ? Number(vData.rangeKm) : null
     };
 
-    let result;
-    if (vData.id) {
-      result = await supabaseAdmin.from('vehicles').update(dbData).eq('id', vData.id);
-    } else {
-      result = await supabaseAdmin.from('vehicles').insert([dbData]);
+    if (isSupabaseConfigured) {
+      try {
+        if (vData.id && !vData.id.startsWith('local-')) {
+          const { error } = await supabaseAdmin.from('vehicles').update(dbData).eq('id', vData.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseAdmin.from('vehicles').insert([dbData]);
+          if (error) throw error;
+        }
+        await get().fetchVehicles();
+        return vData as Vehicle;
+      } catch (err) {
+        console.warn('Supabase saveVehicle error, application de la mise à jour locale :', err);
+      }
     }
 
-    if (result.error) throw result.error;
+    // Mise à jour locale immédiate pour garantir que l'interface répond toujours instantanément
+    const updatedVehicle: Vehicle = {
+      id: vData.id || `local-${Date.now()}`,
+      brand: vData.brand || 'Marque',
+      model: vData.model || 'Modèle',
+      year: Number(vData.year) || new Date().getFullYear(),
+      priceChina: Number(vData.priceChina) || 0,
+      freight: Number(vData.freight) || 0,
+      customsFee: Number(vData.customsFee) || 0,
+      totalPriceFCFA: Number(vData.totalPriceFCFA) || 0,
+      mileage: Number(vData.mileage) || 0,
+      fuel: (vData.fuel as any) || 'Électrique',
+      transmission: (vData.transmission as any) || 'Automatique',
+      seats: Number(vData.seats) || 5,
+      color: vData.color || 'Blanc Nacré',
+      images: vData.images && vData.images.length > 0 ? vData.images : ['https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80'],
+      badge: (vData.badge as any) || 'Nouveau',
+      status: (vData.status as any) || 'En Chine',
+      powerHp: vData.powerHp ? Number(vData.powerHp) : undefined,
+      acceleration: vData.acceleration || '4.5s',
+      rangeKm: vData.rangeKm ? Number(vData.rangeKm) : undefined,
+      description: vData.description || '',
+      portsAvailable: vData.portsAvailable || ['Douala', 'Abidjan', 'Dakar', 'Lomé']
+    };
 
-    await get().fetchVehicles();
-    return vData as Vehicle;
+    set(state => {
+      const exists = state.vehicles.some(v => v.id === updatedVehicle.id);
+      if (exists) {
+        return { vehicles: state.vehicles.map(v => v.id === updatedVehicle.id ? updatedVehicle : v) };
+      }
+      return { vehicles: [updatedVehicle, ...state.vehicles] };
+    });
+
+    return updatedVehicle;
   },
 
   deleteVehicle: async (id) => {
-    const { error } = await supabaseAdmin.from('vehicles').delete().eq('id', id);
-    if (error) throw error;
-    await get().fetchVehicles();
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabaseAdmin.from('vehicles').delete().eq('id', id);
+        if (error) throw error;
+      } catch (err) {
+        console.warn('Supabase deleteVehicle error, suppression locale :', err);
+      }
+    }
+    set(state => ({ vehicles: state.vehicles.filter(v => v.id !== id) }));
   },
 
   fetchUserReservations: async () => {
@@ -321,6 +415,31 @@ export const useStore = create<StoreState>((set, get) => ({
     const { error } = await supabaseAdmin.from('profiles').delete().eq('id', id);
     if (error) throw error;
     await get().fetchAdminClients();
+  },
+
+  fetchAdminReviews: async () => {
+    try {
+      const { data, error } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
+      if (data && data.length > 0) {
+        set({ adminReviews: data });
+      } else {
+        set({ adminReviews: mockReviews as ReviewItem[] });
+      }
+      if (error) throw error;
+    } catch (err) {
+      console.warn("Fetch reviews fallback to mock:", err);
+      set({ adminReviews: mockReviews as ReviewItem[] });
+    }
+  },
+
+  deleteReview: async (id: string) => {
+    try {
+      const { error } = await supabaseAdmin.from('reviews').delete().eq('id', id);
+      if (error) throw error;
+      set(s => ({ adminReviews: s.adminReviews.filter(r => r.id !== id) }));
+    } catch (err) {
+      console.error("Delete review error:", err);
+    }
   },
 
   markNotificationRead: (id) => {

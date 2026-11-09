@@ -6,6 +6,7 @@ import { Vehicle } from '@/types/Vehicle';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './VehicleDetail.module.css';
 import MobileMoneyCheckout from '@/components/MobileMoneyCheckout';
+import Watermark from '@/components/Watermark';
 import {
   ShieldCheckIcon,
   TruckIcon,
@@ -100,6 +101,7 @@ const VehicleDetail: React.FC = () => {
                 exit={{ opacity: 0 }}
               />
             </AnimatePresence>
+            <Watermark />
 
             {galleryImages.length > 1 && (
               <div className={styles.navButtons}>
@@ -121,6 +123,7 @@ const VehicleDetail: React.FC = () => {
                 className={`${styles.thumbBtn} ${selectedImage === idx ? styles.activeThumb : ''}`}
               >
                 <img src={img} alt="Miniature" />
+                <Watermark fontSize={0.45} />
               </button>
             ))}
           </div>
