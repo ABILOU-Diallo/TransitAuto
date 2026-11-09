@@ -4,6 +4,38 @@
   padding-bottom: 4rem;
 }
 
+.loadingState,
+.notFound {
+  min-height: 55vh;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--text-main);
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid var(--border-medium);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: vehicleLoading 0.8s linear infinite;
+}
+
+@keyframes vehicleLoading {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingSpinner {
+    animation-duration: 1.8s;
+  }
+}
+
 .headerContainer {
   max-width: 1280px;
   margin: 0 auto;

@@ -34,7 +34,7 @@ const portPricing: Record<string, { customsRate: number; days: string; portName:
 
 const VehicleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { vehicles, fetchVehicles, user } = useStore();
+  const { vehicles, fetchVehicles, user, loading } = useStore();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedPort, setSelectedPort] = useState('Douala');
   const [showOrderModal, setShowOrderModal] = useState(false);
@@ -45,6 +45,15 @@ const VehicleDetail: React.FC = () => {
   }, [vehicles.length, fetchVehicles]);
 
   const vehicle = vehicles.find((v) => v.id === id) as Vehicle | undefined;
+
+  if (!vehicle && (loading || vehicles.length === 0)) {
+    return (
+      <div className={styles.loadingState} role="status">
+        <span className={styles.loadingSpinner} aria-hidden="true" />
+        <p>Chargement du véhicule...</p>
+      </div>
+    );
+  }
 
   if (!vehicle) {
     return (

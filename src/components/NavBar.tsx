@@ -106,7 +106,7 @@ const NavBar: React.FC = () => {
           </button>
 
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className={styles.userActions}>
               <Link
                 to={user.is_admin ? '/admin' : '/dashboard'}
                 style={{
@@ -120,7 +120,7 @@ const NavBar: React.FC = () => {
                 }}
               >
                 <UserCircleIcon style={{ width: '22px', height: '22px', color: 'var(--primary)' }} />
-                <span className="hidden sm:inline">{user.full_name}</span>
+                <span className={styles.userName}>{user.full_name}</span>
               </Link>
               <button
                 onClick={handleLogout}
@@ -131,7 +131,7 @@ const NavBar: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="hidden sm:flex items-center gap-2">
+            <div className={styles.desktopAuth}>
               <Link to="/login" className="btn-ghost" style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '0.875rem', fontWeight: 600 }}>Connexion</Link>
               <Link to="/cars" className="btn-primary" style={{ fontSize: '0.875rem' }}>Commander</Link>
             </div>
@@ -139,7 +139,7 @@ const NavBar: React.FC = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <div className="md:hidden">
+        <div className={styles.mobileToggle}>
           <button onClick={() => setIsOpen(!isOpen)} className={styles.themeToggle} aria-label="Menu">
              {isOpen ? <XMarkIcon style={{ width: '24px', height: '24px' }} /> : <Bars3Icon style={{ width: '24px', height: '24px' }} />}
           </button>
@@ -153,7 +153,7 @@ const NavBar: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden"
+            className={styles.mobileMenu}
             style={{
               background: 'var(--bg-surface)',
               borderTop: '1px solid var(--border-light)',
@@ -161,7 +161,7 @@ const NavBar: React.FC = () => {
               overflow: 'hidden'
             }}
           >
-            <div className="flex flex-col p-6 gap-4">
+            <div className={styles.mobileMenuContent}>
               {links.map((link) => (
                 <NavLink
                   key={link.to}
@@ -180,9 +180,9 @@ const NavBar: React.FC = () => {
               ))}
               <hr style={{ border: 'none', borderTop: '1px solid var(--border-light)', margin: '0.5rem 0' }} />
               {!user && (
-                <div className="flex flex-col gap-3">
-                  <Link to="/login" onClick={() => setIsOpen(false)} className="btn-ghost text-center no-underline">Connexion</Link>
-                  <Link to="/register" onClick={() => setIsOpen(false)} className="btn-primary text-center no-underline">Créer un compte</Link>
+                <div className={styles.mobileAuth}>
+                  <Link to="/login" onClick={() => setIsOpen(false)} className="btn-ghost">Connexion</Link>
+                  <Link to="/register" onClick={() => setIsOpen(false)} className="btn-primary">Créer un compte</Link>
                 </div>
               )}
             </div>

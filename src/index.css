@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+  color-scheme: light;
+
   /* Luxury Brand Colors */
   --primary: #0EA5E9;
   --primary-dark: #0284C7;
@@ -20,8 +22,20 @@
   --text-muted: #64748B;
   --text-dim: #94A3B8;
 
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+
   --border-light: rgba(0, 0, 0, 0.04);
   --border-medium: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.08);
   --border-luxury: rgba(14, 165, 233, 0.1);
 
   --shadow-luxury: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
@@ -32,6 +46,8 @@
 }
 
 html.dark, .dark {
+  color-scheme: dark;
+
   --bg-page: #050811;
   --bg-surface: #0A0F1E;
   --bg-subtle: #0F172A;
@@ -41,9 +57,22 @@ html.dark, .dark {
   --text-main: #F8FAFC;
   --text-secondary: #E2E8F0;
   --text-muted: #94A3B8;
+  --text-dim: #94A3B8;
+
+  --neutral-50: #0F172A;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #334155;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #94A3B8;
+  --neutral-600: #CBD5E1;
+  --neutral-700: #E2E8F0;
+  --neutral-800: #F1F5F9;
+  --neutral-900: #F8FAFC;
 
   --border-light: rgba(255, 255, 255, 0.04);
   --border-medium: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.12);
   --border-luxury: rgba(14, 165, 233, 0.2);
 
   --shadow-luxury: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
@@ -64,6 +93,17 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   transition: background-color 0.4s ease;
+}
+
+input,
+select,
+textarea {
+  color: var(--text-main);
+}
+
+::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
 }
 
 h1, h2, h3, h4, h5, h6 {

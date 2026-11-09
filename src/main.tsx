@@ -7,6 +7,13 @@ import { loadStripe } from '@stripe/stripe-js';
 import App from './App';
 import './index.css';
 
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+  document.documentElement.classList.add('dark');
+} else if (savedTheme === 'light') {
+  document.documentElement.classList.remove('dark');
+}
+
 // Initialisation de Stripe (clé de test par défaut si non fournie)
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
