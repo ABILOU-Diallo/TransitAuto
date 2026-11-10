@@ -1,15 +1,18 @@
 // src/components/MobileMoneyCheckout.tsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { initializeCinetPay, countries } from '@/lib/paymentProvider';
+import { initializeCinetPay, countries, isCinetPayConfigured } from '@/lib/paymentProvider';
 import styles from './StripeCheckout.module.css';
-import { CheckCircleIcon, ExclamationTriangleIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { ExclamationTriangleIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { Vehicle } from '@/types/Vehicle';
 
 interface Props {
-  vehicleId: string;
-  vehicleName: string;
+  vehicle: Vehicle;
+  destinationPort: string;
+  destinationPortName: string;
+  deliveryDays: string;
   amount: number;
-  onSuccess?: () => void;
+  onSuccess?: (whatsappUrl: string) => void;
   userProfile?: {
     full_name: string;
     email: string;
@@ -17,13 +20,54 @@ interface Props {
   };
 }
 
-const MobileMoneyCheckout: React.FC<Props> = ({ vehicleId, vehicleName, amount, onSuccess, userProfile }) => {
+const MobileMoneyCheckout: React.FC<Props> = ({ vehicle, destinationPort, destinationPortName, deliveryDays, amount, onSuccess, userProfile }) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const vehicleName = [vehicle.brand, vehicle.model].map((part) => part.trim()).filter(Boolean).join(' ');
+  const vehicleDetails = [
+    `*Nom du véhicule :* ${vehicleName}`,
+    `*Marque :* ${vehicle.brand.trim()}`,
+    `*Modèle :* ${vehicle.model.trim()}`,
+    `*Année :* ${vehicle.year}`,
+    `*État :* ${vehicle.status}`,
+    `*Énergie :* ${vehicle.fuel}`,
+    `*Transmission :* ${vehicle.transmission}`,
+    `*Kilométrage :* ${vehicle.mileage.toLocaleString('fr-FR')} km`,
+    `*Nombre de places :* ${vehicle.seats}`,
+    `*Couleur :* ${vehicle.color}`,
+    vehicle.badge ? `*Badge :* ${vehicle.badge}` : null,
+    vehicle.powerHp ? `*Puissance :* ${vehicle.powerHp} ch` : null,
+    vehicle.acceleration ? `*Accélération :* ${vehicle.acceleration}` : null,
+    vehicle.rangeKm ? `*Autonomie :* ${vehicle.rangeKm} km` : null,
+    vehicle.portsAvailable?.length ? `*Ports disponibles :* ${vehicle.portsAvailable.map((port) => port.trim()).join(', ')}` : null,
+    vehicle.description?.trim() ? `*Description :*\n_${vehicle.description.trim()}_` : null,
+  ].filter((line): line is string => Boolean(line));
+  const vehicleOrderMessage = [
+    '🚘 *DEMANDE DE COMMANDE*',
+    '_Imperial China Export_',
+    '',
+    `Bonjour, je souhaite finaliser la commande du véhicule *${vehicleName}* vers le port de *${destinationPort}*.`,
+    '',
+    '📋 *DÉTAILS DU VÉHICULE*',
+    ...vehicleDetails,
+    '',
+    '💰 *TARIFICATION*',
+    `Prix d'achat en Chine : ${vehicle.priceChina.toLocaleString('fr-FR')} CNY`,
+    `Fret : ${vehicle.freight.toLocaleString('fr-FR')} CNY`,
+    `Frais de douane : ${vehicle.customsFee.toLocaleString('fr-FR')} FCFA`,
+    `*Prix total estimé : ${vehicle.totalPriceFCFA.toLocaleString('fr-FR')} FCFA*`,
+    '',
+    '🔗 *PUBLICATION DU VÉHICULE*',
+    `Voir l’annonce complète et ses photos : ${window.location.origin}/cars/${vehicle.id}`,
+    '',
+    '🚢 *LIVRAISON*',
+    `*Destination :* ${destinationPort} - ${destinationPortName}`,
+    deliveryDays ? `*Délai estimé :* ${deliveryDays}` : null,
+  ].filter((line): line is string => Boolean(line)).join('\n');
 
   useEffect(() => {
     if (userProfile?.phone) {
@@ -44,6 +88,12 @@ const MobileMoneyCheckout: React.FC<Props> = ({ vehicleId, vehicleName, amount, 
   };
 
   const handlePayment = async () => {
+    if (!isCinetPayConfigured) {
+      setStatus('error');
+      setMessage('Le paiement Mobile Money est indisponible pour le moment. Contactez notre équipe pour finaliser votre commande.');
+      return;
+    }
+
     if (!validatePhone(phoneNumber)) return;
 
     setLoading(true);
@@ -71,17 +121,36 @@ const MobileMoneyCheckout: React.FC<Props> = ({ vehicleId, vehicleName, amount, 
       if (response.status === 'ACCEPTED') {
         const { error: dbError } = await supabase.from('reservations').insert([{
           user_id: user.id,
-          vehicle_id: vehicleId,
+          vehicle_id: vehicle.id,
           amount: depositAmount,
           status: 'Payé (Acompte)',
-          destination_port: `Port de ${selectedCountry.name}`,
+          destination_port: destinationPort,
           bl_number: transactionId
         }]);
 
         if (dbError) throw dbError;
+
+        const orderDetails = [
+          vehicleOrderMessage,
+          '',
+          '👤 *CLIENT*',
+          `*Nom :* ${userProfile?.full_name || 'Non renseigné'}`,
+          `*E-mail :* ${user.email || userProfile?.email || 'Non renseigné'}`,
+          `*Téléphone de paiement :* ${phoneNumber} (${selectedCountry.name})`,
+          '',
+          '💳 *PAIEMENT CONFIRMÉ*',
+          `*Référence :* ${transactionId}`,
+          `*Acompte payé :* ${depositAmount.toLocaleString('fr-FR')} ${selectedCountry.currency}`,
+          `*Montant total estimé :* ${amount.toLocaleString('fr-FR')} FCFA`,
+          '_Paiement confirmé par CinetPay._',
+        ].filter((line): line is string => Boolean(line));
+        const whatsappUrl = `https://wa.me/33745636495?text=${encodeURIComponent(orderDetails.join('\n'))}`;
+
         setStatus('success');
         setMessage('Paiement validé ! Votre véhicule est réservé.');
-        onSuccess?.();
+        onSuccess?.(whatsappUrl);
+      } else {
+        throw new Error('Le paiement n’a pas été confirmé par l’opérateur.');
       }
     } catch (err: any) {
       console.error('Payment Error:', err);
@@ -148,13 +217,33 @@ const MobileMoneyCheckout: React.FC<Props> = ({ vehicleId, vehicleName, amount, 
         </div>
       </div>
 
+      {!isCinetPayConfigured && (
+        <div className={styles.paymentUnavailable} role="status">
+          <p>Le paiement Mobile Money n’est pas encore configuré. Contactez notre équipe pour finaliser la commande.</p>
+          <a
+            href={`https://wa.me/33745636495?text=${encodeURIComponent(vehicleOrderMessage)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Contacter l’équipe sur WhatsApp
+          </a>
+        </div>
+      )}
+
+      {status === 'error' && message && (
+        <p role="alert" style={{ color: '#F43F5E', fontSize: '0.875rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <ExclamationTriangleIcon style={{ width: '1.25rem', flexShrink: 0 }} />
+          {message}
+        </p>
+      )}
+
       <button
         onClick={handlePayment}
-        disabled={loading}
+        disabled={loading || !isCinetPayConfigured}
         className="btn-primary"
-        style={{ width: '100%', height: '4rem', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+        style={{ width: '100%', height: '4rem', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', opacity: isCinetPayConfigured ? 1 : 0.55, cursor: isCinetPayConfigured ? 'pointer' : 'not-allowed' }}
       >
-        {loading ? 'Connexion opérateur...' : `PAYER AVEC ${selectedCountry.flag}`}
+        {loading ? 'En attente de l’opérateur...' : isCinetPayConfigured ? `PAYER AVEC ${selectedCountry.flag}` : 'Paiement indisponible'}
       </button>
     </div>
   );

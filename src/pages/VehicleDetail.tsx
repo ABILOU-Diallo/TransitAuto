@@ -36,9 +36,10 @@ const VehicleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { vehicles, fetchVehicles, user, loading } = useStore();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedPort, setSelectedPort] = useState('Douala');
+  const [selectedPort, setSelectedPort] = useState('');
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderWhatsappUrl, setOrderWhatsappUrl] = useState('');
 
   useEffect(() => {
     if (vehicles.length === 0) fetchVehicles();
@@ -65,8 +66,10 @@ const VehicleDetail: React.FC = () => {
     );
   }
 
-  const portConfig = portPricing[selectedPort] || portPricing.Douala;
-  const totalPortFCFA = Math.round(vehicle.totalPriceFCFA * (portConfig.customsRate || 1));
+  const portConfig = selectedPort ? portPricing[selectedPort] : undefined;
+  const totalPortFCFA = portConfig
+    ? Math.round(vehicle.totalPriceFCFA * portConfig.customsRate)
+    : vehicle.totalPriceFCFA;
 
   const galleryImages = vehicle.images && vehicle.images.length > 0
       ? vehicle.images
@@ -184,18 +187,22 @@ const VehicleDetail: React.FC = () => {
                 value={selectedPort}
                 onChange={(e) => setSelectedPort(e.target.value)}
                 className="input-premium"
+                required
               >
+                <option value="">Sélectionnez un port</option>
                 {Object.keys(portPricing).map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
 
-            <div className={styles.infoRow}>
-              <MapPinIcon style={{ width: '1.2rem', color: 'var(--primary)' }} />
-              <span>{portConfig.portName}</span>
-            </div>
+            {portConfig && (
+              <div className={styles.infoRow}>
+                <MapPinIcon style={{ width: '1.2rem', color: 'var(--primary)' }} />
+                <span>{portConfig.portName}</span>
+              </div>
+            )}
             <div className={styles.infoRow}>
               <TruckIcon style={{ width: '1.2rem', color: 'var(--primary)' }} />
-              <span>Délai maritime : <strong>{portConfig.days}</strong></span>
+              <span>Délai maritime : <strong>{portConfig?.days || 'À définir'}</strong></span>
             </div>
 
             <div className={styles.priceSummary}>
@@ -205,7 +212,7 @@ const VehicleDetail: React.FC = () => {
               </div>
               <div className={styles.summaryRow}>
                 <span>Frais port & douane ({selectedPort})</span>
-                <span>{Math.round(totalPortFCFA - vehicle.totalPriceFCFA).toLocaleString()} FCFA</span>
+                <span>{portConfig ? Math.round(totalPortFCFA - vehicle.totalPriceFCFA).toLocaleString() : 'À définir'} {portConfig ? 'FCFA' : ''}</span>
               </div>
               <div className={styles.totalRow}>
                 <span>Total estimé</span>
@@ -215,10 +222,15 @@ const VehicleDetail: React.FC = () => {
 
             <button
               className="btn-primary"
-              style={{ width: '100%', padding: '1.2rem', marginTop: '1.5rem' }}
-              onClick={() => setShowOrderModal(true)}
+              style={{ width: '100%', padding: '1.2rem', marginTop: '1.5rem', opacity: selectedPort ? 1 : 0.6, cursor: selectedPort ? 'pointer' : 'not-allowed' }}
+              disabled={!selectedPort}
+              onClick={() => {
+                setOrderSuccess(false);
+                setOrderWhatsappUrl('');
+                setShowOrderModal(true);
+              }}
             >
-              Réserver & Payer l'acompte
+              {selectedPort ? "Réserver & Payer l'acompte" : 'Choisissez un port pour continuer'}
             </button>
 
             <p className={styles.securityNote}>
@@ -247,16 +259,24 @@ const VehicleDetail: React.FC = () => {
                 <div className={styles.successState}>
                   <CheckCircleIcon style={{ width: '4rem', color: '#10B981', marginBottom: '1rem' }} />
                   <h2>Réservation Confirmée !</h2>
-                  <p>Votre paiement a été validé. Nos agents en Chine préparent l'inspection vidéo.</p>
-                  <Link to="/dashboard" className="btn-primary" style={{ marginTop: '2rem' }}>Voir mon suivi</Link>
+                  <p>Votre paiement a été validé. Envoyez le récapitulatif de commande à notre équipe pour organiser la livraison.</p>
+                  <a href={orderWhatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ marginTop: '1.5rem', textDecoration: 'none' }}>
+                    Envoyer la commande sur WhatsApp
+                  </a>
+                  <Link to="/dashboard" className="btn-ghost" style={{ marginTop: '0.75rem' }}>Voir mon suivi</Link>
                 </div>
               ) : (
                 <MobileMoneyCheckout
-                  vehicleId={vehicle.id}
-                  vehicleName={`${vehicle.brand} ${vehicle.model}`}
+                  vehicle={vehicle}
+                  destinationPort={selectedPort}
+                  destinationPortName={portConfig?.portName || selectedPort}
+                  deliveryDays={portConfig?.days || ''}
                   amount={totalPortFCFA}
                   userProfile={user || undefined}
-                  onSuccess={() => setOrderSuccess(true)}
+                  onSuccess={(whatsappUrl) => {
+                    setOrderWhatsappUrl(whatsappUrl);
+                    setOrderSuccess(true);
+                  }}
                 />
               )}
             </motion.div>

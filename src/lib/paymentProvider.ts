@@ -126,25 +126,53 @@ export const countries = [
   },
 ];
 
+const cinetPayApiKey = import.meta.env.VITE_CINETPAY_API_KEY?.trim();
+const cinetPaySiteId = import.meta.env.VITE_CINETPAY_SITE_ID?.trim();
+
+export const isCinetPayConfigured = Boolean(
+  cinetPayApiKey &&
+  cinetPaySiteId &&
+  !cinetPayApiKey.toLowerCase().includes('placeholder') &&
+  !cinetPaySiteId.toLowerCase().includes('placeholder')
+);
+
 // Chargement dynamique et asynchrone du SDK CinetPay à la demande
 const loadCinetPayScript = (): Promise<void> => {
   if (typeof window !== 'undefined' && (window as any).CinetPay) {
     return Promise.resolve();
   }
   return new Promise((resolve, reject) => {
+    let settled = false;
+    let timeoutId: number;
+    const finish = (error?: Error) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      if (error) reject(error);
+      else if ((window as any).CinetPay) resolve();
+      else reject(new Error("Le SDK CinetPay n'a pas pu être initialisé."));
+    };
+    const handleLoad = () => finish();
+    const handleError = () => finish(new Error("Impossible de joindre le serveur CinetPay."));
+
+    timeoutId = window.setTimeout(
+      () => finish(new Error("Le service de paiement met trop de temps à répondre. Vérifiez votre connexion puis réessayez.")),
+      15000
+    );
+
     const existing = document.getElementById('cinetpay-sdk');
     if (existing) {
-      if ((window as any).CinetPay) return resolve();
-      existing.addEventListener('load', () => resolve());
-      existing.addEventListener('error', () => reject(new Error("Impossible de joindre le serveur CinetPay.")));
+      if ((window as any).CinetPay) return finish();
+      existing.addEventListener('load', handleLoad, { once: true });
+      existing.addEventListener('error', handleError, { once: true });
       return;
     }
     const script = document.createElement('script');
     script.id = 'cinetpay-sdk';
     script.src = 'https://checkout.cinetpay.com/sdk/v1/cinetpay.js';
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Le SDK CinetPay est temporairement inaccessible."));
+    script.onload = handleLoad;
+    script.onerror = handleError;
     document.body.appendChild(script);
   });
 };
@@ -159,6 +187,10 @@ export const initializeCinetPay = async (data: {
   customerEmail: string;
   customerPhoneNumber: string;
 }) => {
+  if (!isCinetPayConfigured) {
+    throw new Error('Le paiement Mobile Money est indisponible pour le moment. Contactez notre équipe pour finaliser votre commande.');
+  }
+
   await loadCinetPayScript();
 
   return new Promise((resolve, reject) => {
@@ -168,41 +200,57 @@ export const initializeCinetPay = async (data: {
     }
 
     const cp = (window as any).CinetPay;
+    let settled = false;
+    const timeoutId = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error("Aucune réponse de l'opérateur après 90 secondes. Vérifiez l'état de votre paiement avant de réessayer."));
+    }, 90000);
+    const finish = (callback: (value: any) => void, value: any) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      callback(value);
+    };
 
-    cp.setConfig({
-      apikey: import.meta.env.VITE_CINETPAY_API_KEY,
-      site_id: import.meta.env.VITE_CINETPAY_SITE_ID,
-      notify_url: 'https://votre-domaine.com/api/payment-notify',
-      mode: 'PRODUCTION'
-    });
+    try {
+      cp.setConfig({
+        apikey: cinetPayApiKey,
+        site_id: cinetPaySiteId,
+        notify_url: 'https://votre-domaine.com/api/payment-notify',
+        mode: 'PRODUCTION'
+      });
 
-    cp.getCheckout({
-      transaction_id: data.transactionId,
-      amount: data.amount,
-      currency: data.currency,
-      channels: 'ALL',
-      description: data.description,
-      customer_name: data.customerName,
-      customer_surname: data.customerSurname,
-      customer_email: data.customerEmail,
-      customer_phone_number: data.customerPhoneNumber,
-      customer_address: 'AD',
-      customer_city: 'City',
-      customer_country: 'CI',
-      customer_state: 'ST',
-      customer_zip_code: '00225',
-    });
+      cp.getCheckout({
+        transaction_id: data.transactionId,
+        amount: data.amount,
+        currency: data.currency,
+        channels: 'ALL',
+        description: data.description,
+        customer_name: data.customerName,
+        customer_surname: data.customerSurname,
+        customer_email: data.customerEmail,
+        customer_phone_number: data.customerPhoneNumber,
+        customer_address: 'AD',
+        customer_city: 'City',
+        customer_country: 'CI',
+        customer_state: 'ST',
+        customer_zip_code: '00225',
+      });
 
-    cp.waitResponse((response: any) => {
-      if (response.status === 'ACCEPTED') {
-        resolve(response);
-      } else {
-        reject(response);
-      }
-    });
+      cp.waitResponse((response: any) => {
+        if (response.status === 'ACCEPTED') {
+          finish(resolve, response);
+        } else {
+          finish(reject, new Error("Le paiement n'a pas été confirmé par l'opérateur."));
+        }
+      });
 
-    cp.onError((error: any) => {
-      reject(error);
-    });
+      cp.onError((error: any) => {
+        finish(reject, new Error(error?.message || "Le service de paiement a rencontré une erreur."));
+      });
+    } catch (error) {
+      finish(reject, error instanceof Error ? error : new Error("Impossible de démarrer le paiement."));
+    }
   });
 };
